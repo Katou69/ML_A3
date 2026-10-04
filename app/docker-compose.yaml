@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  web:
+    image: minthantwin/car-price-app:a3
+    environment:
+      - HOST=0.0.0.0
+      - PORT=80
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.services.web-st127145.loadbalancer.server.port=8050
+      - traefik.http.routers.web-st127145.rule=Host(`web-st127145.ml.brain.cs.ait.ac.th`)
+      - traefik.http.routers.web-st127145.tls=true
+      - traefik.http.routers.web-st127145.tls.certresolver=letsencrypt
+      - traefik.http.routers.web-st127145.entrypoints=websecure
+    networks:
+      - default
+      - web
+
+networks:
+  default:
+  web:
+    external: true
