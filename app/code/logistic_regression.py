@@ -13,7 +13,7 @@ class LogisticRegression(object):
         self.alpha = alpha
         self.max_iter = max_iter
         self.method = method
-        # NEW for A3 Task 2: Ridge / L2 penalty, toggleable
+        # Ridge / L2 penalty
         self.use_penalty = use_penalty
         self.l = l
  
@@ -72,16 +72,14 @@ class LogisticRegression(object):
         m = X.shape[0]
         h = self.h_theta(X, self.W)
         # clip away from exact 0/1 to avoid log(0) -> nan in the loss display
-        # (does not affect the gradient itself, which never uses log)
         h_clipped = np.clip(h, 1e-15, 1 - 1e-15)
         loss = - np.sum(Y * np.log(h_clipped)) / m
         error = h - Y
         grad = self.softmax_grad(X, error)
  
-        # NEW for A3 Task 2: Ridge / L2 penalty (same idea as A2's Ridge class,
-        # folded directly in here instead of a separate pluggable object)
-        # loss term:  + l * sum(theta^2)      (PDF's J(theta) formula)
-        # grad term:  + l * 2 * theta          (derivative of l * theta^2)
+        # Ridge / L2 penalty 
+        # loss term:  + l * sum(theta^2)      
+        # grad term:  + l * 2 * theta          
         if self.use_penalty:
             loss = loss + self.l * np.sum(self.W ** 2)
             grad = grad + self.l * 2 * self.W
@@ -89,9 +87,8 @@ class LogisticRegression(object):
         return loss, grad
  
     def softmax(self, theta_t_x):
-        # numerically stable softmax: subtracting the row max doesn't change the
-        # result mathematically (it cancels in the ratio), but keeps every exponent
-        # <= 0, preventing overflow as W grows during training
+        # numerically stable softmax: subtracting the row max doesn't change the result mathematically (it cancels in the ratio), 
+        # but keeps every exponent <= 0, preventing overflow as W grows during training
         z = theta_t_x - np.max(theta_t_x, axis=1, keepdims=True)
         return np.exp(z) / np.sum(np.exp(z), axis=1, keepdims=True)
  
@@ -110,8 +107,9 @@ class LogisticRegression(object):
         plt.xlabel("epoch")
         plt.ylabel("losses")
         plt.legend()
+
  
-    # ---------------- Task 1: metrics from scratch ----------------
+    # Metrics from scratch 
  
     def accuracy(self, y_true, y_pred):
         return np.mean(y_true == y_pred)
@@ -153,7 +151,7 @@ class LogisticRegression(object):
         return sum(w * self.f1_score(y_true, y_pred, c) for w, c in zip(weights, range(self.k)))
  
     def classification_report_scratch(self, y_true, y_pred):
-        """Classification_report layout but made from the methods above, for comparison"""
+        #Classification_report layout but made from the methods above, for comparison
         print(f"{'':>12}{'precision':>12}{'recall':>12}{'f1-score':>12}{'support':>12}")
         for c in range(self.k):
             support = np.sum(y_true == c)
